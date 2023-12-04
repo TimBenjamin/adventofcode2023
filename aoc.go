@@ -3,6 +3,7 @@ package main
 import (
 	"adventofcode2023/day_1"
 	"adventofcode2023/day_2"
+	"adventofcode2023/day_3"
 	"fmt"
 	"os"
 )
@@ -15,6 +16,7 @@ func main() {
 	days := map[string]func(part string, input string) (result string){
 		"day_1": day_1.Call,
 		"day_2": day_2.Call,
+		"day_3": day_3.Call,
 	}
 
 	var day string
