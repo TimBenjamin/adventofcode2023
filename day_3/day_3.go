@@ -14,7 +14,15 @@ func checkForSymbol(snip []string) bool {
 	numberRe := regexp.MustCompile("[0-9]")
 	for _, c := range snip {
 		if c != "." && len(c) > 0 && !numberRe.MatchString(c) {
-			fmt.Printf("found a symbol: %v\n", c)
+			return true
+		}
+	}
+	return false
+}
+
+func checkForAsterisk(snip []string) bool {
+	for _, c := range snip {
+		if c == "*" {
 			return true
 		}
 	}
@@ -23,64 +31,64 @@ func checkForSymbol(snip []string) bool {
 
 func partOne() int {
 	total := 0
-	re := regexp.MustCompile("[^0-9]+")
+	re := regexp.MustCompile("[0-9]+")
 	for lineNum, line := range input {
-		numbers := re.Split(line, -1)
-		for _, number := range numbers {
-
+		numberLocations := re.FindAllStringSubmatchIndex(line, -1)
+		for _, location := range numberLocations {
+			number := line[location[0]:location[1]]
 			// check around the number to see if there are symbols
-			// Bug here - the same number can appear twice in a line :-(
-			idx := strings.Index(line, number)
-			if len(number) == 0 {
-				continue
-			}
-			fmt.Printf("checking number: %v\n", number)
-
 			var charsToCheck []string
-			from := idx
-			to := idx + len(number) - 1
+			from := location[0]
+			to := location[1]
+			fmt.Printf("number %v is from: %v to: %v\n", number, from, to)
+
+			// need to get any chars either side of it:
 			if from > 0 {
 				from--
 				charsToCheck = append(charsToCheck, line[from:from+1])
-				fmt.Printf("from it is: %v\n", line[from:from+1])
+				fmt.Printf("char before: %v\n", line[from:from+1])
 			}
-			if to < len(line)-1 {
+			fmt.Printf("len of line: %v\n", len(line))
+			if to < len(line) {
 				to++
-				charsToCheck = append(charsToCheck, line[to:to+1])
-				fmt.Printf("to it is: %v\n", line[to:to+1])
+				charsToCheck = append(charsToCheck, line[to-1:to])
+				fmt.Printf("char after: %v\n", line[to-1:to])
 			}
-			fmt.Printf("from: %v / to: %v\n", from, to)
+
+			// the expanded snippet horizontal positions
+			fmt.Printf("expanded: from: %v / to: %v\n", from, to)
 
 			// check line above
 			if lineNum > 0 {
-				snip := strings.Split(input[lineNum-1][from:to+1], ".")
+				snip := strings.Split(input[lineNum-1][from:to], ".")
 				charsToCheck = append(charsToCheck, snip...)
-				fmt.Printf("linB: %v\n", input[lineNum-1])
 			}
-			fmt.Printf("line: %v\n", line)
 			// check line below
 			if lineNum < len(input)-1 {
-				snip := strings.Split(input[lineNum+1][from:to+1], ".")
+				snip := strings.Split(input[lineNum+1][from:to], ".")
 				charsToCheck = append(charsToCheck, snip...)
-				fmt.Printf("linA: %v\n", input[lineNum+1])
 			}
 
-			partNum, _ := strconv.Atoi(number)
+			// do the output
 			if checkForSymbol(charsToCheck) {
-				fmt.Printf("number is a part: %v\n\n", partNum)
+				fmt.Printf("number is a part: %v\n\n", number)
+				partNum, _ := strconv.Atoi(number)
 				total += partNum
 			} else {
-				fmt.Printf("number IS NOT a part: %v\n\n", partNum)
+				fmt.Printf("number IS NOT a part: %v\n\n", number)
 			}
 		}
-
 	}
-
 	return total
 }
 
 func partTwo() int {
 	total := 0
+
+	// find pairs of numbers that are adjacent to the same * character
+
+	// find *'s and then find numbers that are adjacent to them?
+
 	return total
 }
 
