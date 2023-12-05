@@ -141,6 +141,7 @@ func partTwo() int {
 	// 	}
 	// }
 
+	// It's faster to reverse the process
 	chain = []string{"humidityToLocation", "temperatureToHumidity", "lightToTemperature", "waterToLight", "fertilizerToWater", "soilToFertilizer", "seedToSoil"}
 	for {
 		lowestLocation++
@@ -153,8 +154,6 @@ func partTwo() int {
 		for _, seedRange := range seedRanges {
 			if result >= seedRange[0] && result < seedRange[0]+seedRange[1] {
 				return lowestLocation
-			} else {
-				// fmt.Printf("%v is not within seed range %v to %v\n", result, seedRange[0], seedRange[0]+seedRange[1])
 			}
 		}
 		// fmt.Printf("Current lowest location: %v\n", lowestLocation)
