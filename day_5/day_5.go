@@ -14,13 +14,13 @@ var chain []string
 
 func parseInput() {
 	maps = map[string][][]int{
-		"seedToSoil":            [][]int{},
-		"soilToFertilizer":      [][]int{},
-		"fertilizerToWater":     [][]int{},
-		"waterToLight":          [][]int{},
-		"lightToTemperature":    [][]int{},
-		"temperatureToHumidity": [][]int{},
-		"humidityToLocation":    [][]int{},
+		"seedToSoil":            {},
+		"soilToFertilizer":      {},
+		"fertilizerToWater":     {},
+		"waterToLight":          {},
+		"lightToTemperature":    {},
+		"temperatureToHumidity": {},
+		"humidityToLocation":    {},
 	}
 	chain = []string{"seedToSoil", "soilToFertilizer", "fertilizerToWater", "waterToLight", "lightToTemperature", "temperatureToHumidity", "humidityToLocation"}
 	var currentMap string
