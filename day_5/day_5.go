@@ -93,6 +93,18 @@ func getDestinationFromSource(source int, mapName string) int {
 	return source
 }
 
+func getSourceFromDestination(destination int, mapName string) int {
+	// the inverse of the above function
+	// Given: [50,98,2]
+	// Destination 51 should return 99
+	for _, numberRange := range maps[mapName] {
+		if destination >= numberRange[0] && destination < numberRange[0]+numberRange[2] {
+			return numberRange[1] + (destination - numberRange[0])
+		}
+	}
+	return destination
+}
+
 func partOne() int {
 	var locations []int
 	for _, seed := range seeds {
@@ -116,19 +128,37 @@ func partTwo() int {
 	}
 
 	lowestLocation := -1
-	for _, seedRange := range seedRanges {
-		for seed := seedRange[0]; seed < seedRange[0]+seedRange[1]; seed++ {
-			// This is now slow due to the massive ranges but I don't know how to predict when the jumps in the result are
-			result := seed
-			for _, mapName := range chain {
-				result = getDestinationFromSource(result, mapName)
-			}
-			if lowestLocation == -1 || result < lowestLocation {
-				lowestLocation = result
+	// for _, seedRange := range seedRanges {
+	// 	for seed := seedRange[0]; seed < seedRange[0]+seedRange[1]; seed++ {
+	// 		// This is now slow due to the massive ranges but I don't know how to predict when the jumps in the result are
+	// 		result := seed
+	// 		for _, mapName := range chain {
+	// 			result = getDestinationFromSource(result, mapName)
+	// 		}
+	// 		if lowestLocation == -1 || result < lowestLocation {
+	// 			lowestLocation = result
+	// 		}
+	// 	}
+	// }
+
+	chain = []string{"humidityToLocation", "temperatureToHumidity", "lightToTemperature", "waterToLight", "fertilizerToWater", "soilToFertilizer", "seedToSoil"}
+	for {
+		lowestLocation++
+		result := lowestLocation
+		for _, mapName := range chain {
+			result = getSourceFromDestination(result, mapName)
+		}
+		// fmt.Printf("Got seed: %v for location: %v\n", result, lowestLocation)
+		// is the result within the ranges of seeds?
+		for _, seedRange := range seedRanges {
+			if result >= seedRange[0] && result < seedRange[0]+seedRange[1] {
+				return lowestLocation
+			} else {
+				// fmt.Printf("%v is not within seed range %v to %v\n", result, seedRange[0], seedRange[0]+seedRange[1])
 			}
 		}
+		// fmt.Printf("Current lowest location: %v\n", lowestLocation)
 	}
-	return lowestLocation
 }
 
 func Call(part string, inputFile string) string {
