@@ -179,12 +179,14 @@ func getHandScorePartTwo(cards []string) int {
 			// 2233J => 22333
 			return scores["full house"]
 		}
+		// if strings.Contains(strings.Join(cards, ""), "J") {}
 		return scores["two pair"]
 	}
 	if pairs == 1 {
 		if three {
-			// e.g. AAAJJ
-			if kind["J"] == 2 {
+			if kind["J"] == 2 || kind["J"] == 3 {
+				// e.g. AAAJJ
+				// e.g. AAJJJ
 				return scores["five of a kind"]
 			}
 			// e.g. AAAQQ
