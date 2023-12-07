@@ -147,10 +147,16 @@ func getHandScorePartTwo(cards []string) int {
 	three := false
 	for _, v := range kind {
 		if v == 5 {
+			// there is only JJJJJ
+			return scores["five of a kind"]
+		}
+		if kind["J"] == 4 {
+			// e.g. J8JJJ
 			return scores["five of a kind"]
 		}
 		if v == 4 {
 			if kind["J"] == 1 {
+				// e.g. J8888
 				return scores["five of a kind"]
 			}
 			return scores["four of a kind"]
@@ -165,6 +171,7 @@ func getHandScorePartTwo(cards []string) int {
 	if pairs == 2 {
 		if kind["J"] == 2 {
 			// two J's count as the other pair
+			// e.g. J8QJ8 => 88Q88
 			return scores["four of a kind"]
 		}
 		if kind["J"] == 1 {
@@ -176,14 +183,17 @@ func getHandScorePartTwo(cards []string) int {
 	}
 	if pairs == 1 {
 		if three {
+			// e.g. AAAJJ
 			if kind["J"] == 2 {
 				return scores["five of a kind"]
 			}
+			// e.g. AAAQQ
 			return scores["full house"]
 		}
 		if kind["J"] == 2 {
 			// the single pair is JJ
 			// the two J's count as any of the other cards
+			// the other cards must all be different here
 			return scores["three of a kind"]
 		}
 		if kind["J"] == 1 {
@@ -224,9 +234,9 @@ func partTwo() int {
 	slices.SortFunc(hands, handSort)
 	total := 0
 	for rank, hand := range hands {
-		//if strings.Contains(strings.Join(hand.cards, ""), "J") {
-		fmt.Printf("cards: %v / bid: %v / score: %v => rank: %v\n", hand.cards, hand.bid, hand.score, rank+1)
-		//}
+		// if hand.score == 4 && strings.Contains(strings.Join(hand.cards, ""), "J") {
+		// fmt.Printf("cards: %v / bid: %v / score: %v => rank: %v\n", hand.cards, hand.bid, hand.score, rank+1)
+		// }
 		total += (rank + 1) * hand.bid
 	}
 	return total
