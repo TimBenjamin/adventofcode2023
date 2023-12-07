@@ -236,9 +236,7 @@ func partTwo() int {
 	slices.SortFunc(hands, handSort)
 	total := 0
 	for rank, hand := range hands {
-		// if hand.score == 4 && strings.Contains(strings.Join(hand.cards, ""), "J") {
 		// fmt.Printf("cards: %v / bid: %v / score: %v => rank: %v\n", hand.cards, hand.bid, hand.score, rank+1)
-		// }
 		total += (rank + 1) * hand.bid
 	}
 	return total
