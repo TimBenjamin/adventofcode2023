@@ -39,40 +39,6 @@ func partOne() int {
 	return steps
 }
 
-// func partTwo() int {
-// 	currentNodes := []string{}
-// 	for k := range nodeMap {
-// 		if k[2] == 'A' {
-// 			currentNodes = append(currentNodes, k)
-// 		}
-// 	}
-// 	fmt.Printf("size of starting currentNodes: %v\n", len(currentNodes))
-// 	instructionsIndex := 0
-// 	steps := 0
-// 	for {
-// 		steps++
-// 		allEndInZ := true
-// 		for i := 0; i < len(currentNodes); i++ {
-// 			if instructions[instructionsIndex] == "L" {
-// 				currentNodes[i] = nodeMap[currentNodes[i]].L
-// 			} else {
-// 				currentNodes[i] = nodeMap[currentNodes[i]].R
-// 			}
-// 			if currentNodes[i][2] != 'Z' {
-// 				allEndInZ = false
-// 			}
-// 		}
-// 		if allEndInZ {
-// 			break
-// 		}
-// 		instructionsIndex++
-// 		if instructionsIndex == len(instructions) {
-// 			instructionsIndex = 0
-// 		}
-// 	}
-// 	return steps
-// }
-
 func getSteps(currentNode string) int {
 	instructionsIndex := 0
 	steps := 0
