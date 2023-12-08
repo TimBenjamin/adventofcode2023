@@ -2,7 +2,6 @@ package day_8
 
 import (
 	"adventofcode2023/util"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -60,10 +59,8 @@ func getSteps(currentNode string) int {
 }
 
 func findGCD(a, b int) int {
-	fmt.Printf("start wth %v, %v\n", a, b)
 	for b != 0 {
 		a, b = b, a%b
-		fmt.Printf(" then %v, %v\n", a, b)
 	}
 	return a
 }
