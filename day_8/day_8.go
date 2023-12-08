@@ -83,11 +83,6 @@ func partTwo() int {
 		steps = append(steps, getSteps(currentNode))
 	}
 
-	product := 1
-	for _, s := range steps {
-		product *= s
-	}
-
 	lcm := steps[0]
 	for _, num := range steps[1:] {
 		lcm = findLCM(lcm, num)
