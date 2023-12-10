@@ -2,6 +2,7 @@ package main
 
 import (
 	"adventofcode2023/day_1"
+	"adventofcode2023/day_10"
 	"adventofcode2023/day_2"
 	"adventofcode2023/day_3"
 	"adventofcode2023/day_4"
@@ -20,15 +21,16 @@ func main() {
 	// these exported functions must all have the same return type!
 	// therefore any solutions that are ints will be converted to strings
 	days := map[string]func(part string, input string) (result string){
-		"day_1": day_1.Call,
-		"day_2": day_2.Call,
-		"day_3": day_3.Call,
-		"day_4": day_4.Call,
-		"day_5": day_5.Call,
-		"day_6": day_6.Call,
-		"day_7": day_7.Call,
-		"day_8": day_8.Call,
-		"day_9": day_9.Call,
+		"day_1":  day_1.Call,
+		"day_2":  day_2.Call,
+		"day_3":  day_3.Call,
+		"day_4":  day_4.Call,
+		"day_5":  day_5.Call,
+		"day_6":  day_6.Call,
+		"day_7":  day_7.Call,
+		"day_8":  day_8.Call,
+		"day_9":  day_9.Call,
+		"day_10": day_10.Call,
 	}
 
 	var day string
