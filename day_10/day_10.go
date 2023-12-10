@@ -155,6 +155,7 @@ func partOne() int {
 			break
 		}
 	}
+
 	// max distance is half (the length of steps)
 	return len(steps) / 2
 }
@@ -198,33 +199,24 @@ func partTwo() int {
 			if !stepsContains([]int{y, x}, steps) {
 				possiblyEnclosed = append(possiblyEnclosed, []int{y, x})
 			}
-			// if grid[y][x] == "." {
-			// 	possiblyEnclosed = append(possiblyEnclosed, []int{y, x})
-			// }
 		}
 	}
 	fmt.Printf("possibly enclosed locations: %v\n", possiblyEnclosed)
 
 	// test
-	possiblyEnclosed = [][]int{}
-	possiblyEnclosed = append(possiblyEnclosed, []int{5, 3})
+	// possiblyEnclosed = [][]int{}
+	// possiblyEnclosed = append(possiblyEnclosed, []int{5, 3})
 	// test3.txt should give 4
 	// test4.txt should give 8
 	// test5.txt should give 10
 
-	// From each of these points, "cast a ray" N/S/E/W
-	// if the ray crosses the loop (i.e. the coordinate is in `steps`) an even number of times
-	// crossing is: going E/W and the shape is "|" OR going N/S and the shape is "-"
+	// From each of these points, "cast a ray" East
+	// if the ray crosses the loop (i.e. the coordinate is in `steps`) an odd number of times then it is inside
+	// however I am not sure how to define "crossing" when it comes to bending steps F, J, 7, L
 	numberInside := 0
 	for _, coord := range possiblyEnclosed {
 		fmt.Printf("Test coord: %v\n", coord)
 		crossingEast := 0
-		crossingWest := 0
-		crossingNorth := 0
-		crossingSouth := 0
-		allNonSteps := true // if we only find non-step locations, it's outside regardless
-
-		fmt.Println(" go east:")
 
 		ups := 0
 		downs := 0
@@ -245,14 +237,11 @@ func partTwo() int {
 				if shape == "7" || shape == "F" {
 					downs++
 				}
-				allNonSteps = false
 			}
 		}
 
-		if allNonSteps {
-			fmt.Println("  > all dots, point is outside")
-			continue
-		}
+		fmt.Printf(" > crossings E: %v\n", crossingEast)
+
 		fmt.Printf("ups: %v / downs: %v\n", ups, downs)
 		if ups > 0 && ups%2 == 1 && downs%2 == 1 {
 			crossingEast++
@@ -263,78 +252,6 @@ func partTwo() int {
 			continue
 		}
 
-		// fmt.Printf(" go west:")
-		// allNonSteps = true
-		// for i := coord[1]; i > 0; i-- {
-		// 	shape := grid[coord[0]][i]
-		// 	shapeCoord := []int{coord[0], i}
-		// 	fmt.Printf("  found shape %v\n", shape)
-		// 	if stepsContains(shapeCoord, steps) {
-		// 		if shape == "|" {
-		// 			crossingWest++
-		// 		}
-		// 		allNonSteps = false
-		// 	}
-		// }
-		// if allNonSteps {
-		// 	fmt.Println("  > all dots, point is outside")
-		// 	continue
-		// }
-		// fmt.Printf("  > crossings W: %v\n", crossingWest)
-		// if crossingWest > 0 && crossingWest%2 == 0 {
-		// 	fmt.Println("  > even number of W crossings, point is not inside")
-		// 	continue
-		// }
-
-		// fmt.Printf(" go north:")
-		// allNonSteps = true
-		// for i := coord[0]; i > 0; i-- {
-		// 	shape := grid[i][coord[1]]
-		// 	shapeCoord := []int{i, coord[1]}
-		// 	fmt.Printf("  found shape %v\n", shape)
-		// 	if stepsContains(shapeCoord, steps) {
-		// 		if shape == "-" {
-		// 			crossingNorth++
-		// 		}
-		// 		allNonSteps = false
-		// 	}
-		// }
-		// if allNonSteps {
-		// 	fmt.Println("  > all dots, point is outside")
-		// 	continue
-		// }
-		// fmt.Printf("  > crossings N: %v\n", crossingNorth)
-		// if crossingNorth > 0 && crossingNorth%2 == 0 {
-		// 	fmt.Println("  > even number of N crossings, point is not inside")
-		// 	continue
-		// }
-
-		// fmt.Printf(" go south:")
-		// allNonSteps = true
-		// for i := coord[0]; i < len(grid)-1; i++ {
-		// 	shape := grid[i][coord[1]]
-		// 	shapeCoord := []int{i, coord[1]}
-		// 	fmt.Printf("  found shape %v\n", shape)
-		// 	if stepsContains(shapeCoord, steps) {
-		// 		if shape == "-" {
-		// 			crossingSouth++
-		// 		}
-		// 		allNonSteps = false
-		// 	}
-		// }
-		// if allNonSteps {
-		// 	fmt.Println("  > all dots, point is outside")
-		// 	continue
-		// }
-		// fmt.Printf("  > crossings S: %v\n", crossingSouth)
-		// if crossingSouth > 0 && crossingSouth%2 == 0 {
-		// 	fmt.Println("  > even number of S crossings, point is not inside")
-		// 	continue
-		// }
-		fmt.Printf(" > crossings E: %v\n", crossingEast)
-		fmt.Printf(" > crossings W: %v\n", crossingWest)
-		fmt.Printf(" > crossings N: %v\n", crossingNorth)
-		fmt.Printf(" > crossings S: %v\n", crossingSouth)
 		fmt.Printf(" >> point %v is inside!\n", coord)
 		numberInside++
 	}
