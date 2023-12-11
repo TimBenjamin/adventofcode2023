@@ -23,6 +23,15 @@ func ParseInputIntoLines(inputFile string) (input []string) {
 	return input
 }
 
+func ParseInputIntoStringGrid(inputFile string) (input [][]string) {
+	inputLines := ParseInputIntoLines(inputFile)
+	grid := [][]string{}
+	for _, line := range inputLines {
+		grid = append(grid, strings.Split(line, ""))
+	}
+	return grid
+}
+
 func ParseSingleLineInput(inputFile string) string {
 	f, err := os.Open(inputFile)
 	if err != nil {
