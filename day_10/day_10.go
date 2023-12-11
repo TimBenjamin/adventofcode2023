@@ -189,71 +189,122 @@ func partTwo() int {
 	// any coord in the grid that is NOT on an edge and IS a "." is potentially enclosed
 	possiblyEnclosed := [][]int{}
 	for y, row := range grid {
-		if y == 0 || y == len(grid)-1 {
-			continue // ignore edges
-		}
+		// if y == 0 || y == len(grid)-1 {
+		// 	continue // ignore edges
+		// }
 		for x, _ := range row {
-			if x == 0 || x == len(row)-1 {
-				continue // ignore edges
-			}
-			if !stepsContains([]int{y, x}, steps) {
-				possiblyEnclosed = append(possiblyEnclosed, []int{y, x})
-			}
+			// if x == 0 || x == len(row)-1 {
+			// 	continue // ignore edges
+			// }
+			// if !stepsContains([]int{y, x}, steps) {
+			possiblyEnclosed = append(possiblyEnclosed, []int{y, x})
+			// }
 		}
 	}
 	fmt.Printf("possibly enclosed locations: %v\n", possiblyEnclosed)
 
 	// test
 	// possiblyEnclosed = [][]int{}
-	// possiblyEnclosed = append(possiblyEnclosed, []int{5, 3})
+	// possiblyEnclosed = append(possiblyEnclosed, []int{4, 4})
 	// test3.txt should give 4
 	// test4.txt should give 8
+	// test4 start shape is F
+	grid[startY][startX] = "F"
 	// test5.txt should give 10
+	// test5 start shape is 7
+	// grid[startY][startX] = "7"
+	// test 5: [6,13] and [6,14] should be inside
+	// [7,1] should NOT be inside
+
+	// TODO: we need to know the shape of the starting position
 
 	// From each of these points, "cast a ray" East
 	// if the ray crosses the loop (i.e. the coordinate is in `steps`) an odd number of times then it is inside
 	// however I am not sure how to define "crossing" when it comes to bending steps F, J, 7, L
 	numberInside := 0
-	for _, coord := range possiblyEnclosed {
-		fmt.Printf("Test coord: %v\n", coord)
-		crossingEast := 0
 
-		ups := 0
-		downs := 0
-		for i := coord[1]; i < len(grid[0])-1; i++ {
-			shape := grid[coord[0]][i]
-			shapeCoord := []int{coord[0], i}
-			if shapeCoord[0] == coord[0] && shapeCoord[1] == coord[1] {
+	for y, row := range grid {
+		for x, shape := range row {
+			testCoord := []int{y, x}
+			if stepsContains(testCoord, steps) {
 				continue
 			}
-			fmt.Printf("  found shape %v\n", shape)
-			if stepsContains(shapeCoord, steps) {
-				if shape == "|" {
-					crossingEast++
+			fmt.Printf("Test coord: %v\n", testCoord)
+
+			// go east from this coord and look for crossings
+			for i := x; i < len(row); i++ {
+				coord := []int{y, i}
+				fmt.Printf("  found shape %v\n", shape)
+				crossings := 0
+				dir := ""
+				if stepsContains(coord, steps) {
+					fmt.Printf("   it is on the loop\n")
+					if shape == "|" {
+						crossings++
+						dir = ""
+					}
+					if shape == "J" || shape == "L" {
+						if dir == "down" {
+							crossings++
+							dir = ""
+						} else {
+							dir = "up"
+						}
+					} else if shape == "7" || shape == "F" {
+						if dir == "up" {
+							crossings++
+							dir = ""
+						} else {
+							dir = "down"
+						}
+					}
+					fmt.Printf(" current dir is: %v\n", dir)
 				}
-				if shape == "J" || shape == "L" {
-					ups++
-				}
-				if shape == "7" || shape == "F" {
-					downs++
+				fmt.Printf(" > crossings: %v\n", crossings)
+				if crossings == 0 || crossings%2 == 0 {
+					fmt.Println("  > even number of E crossings, point is not inside")
+				} else {
+					fmt.Printf(" >> point %v is inside!\n", coord)
+					numberInside++
 				}
 			}
 		}
 
-		fmt.Printf(" > crossings E: %v\n", crossingEast)
+		// n := 0
+		// s := 0
 
-		fmt.Printf("ups: %v / downs: %v\n", ups, downs)
-		if ups > 0 && ups%2 == 1 && downs%2 == 1 {
-			crossingEast++
-		}
-		fmt.Printf("  > crossings E: %v\n", crossingEast)
-		if crossingEast == 0 || crossingEast%2 == 0 {
-			fmt.Println("  > even number of E crossings, point is not inside")
-			continue
-		}
+		// for i := coord[1]; i < len(grid[0])-1; i++ {
+		// 	shape := grid[coord[0]][i]
+		// 	shapeCoord := []int{coord[0], i}
+		// 	if shapeCoord[0] == coord[0] && shapeCoord[1] == coord[1] {
+		// 		continue
+		// 	}
+		// 	fmt.Printf("  found shape %v\n", shape)
+		// 	if stepsContains(shapeCoord, steps) {
+		// 		if shape == "|" {
+		// 			n++
+		// 			s++
+		// 		}
+		// 		if shape == "J" || shape == "L" {
+		// 			n++
+		// 		}
+		// 		if shape == "F" || shape == "7" {
+		// 			s++
+		// 		}
+		// 	}
+		// }
 
-		fmt.Printf(" >> point %v is inside!\n", coord)
-		numberInside++
+		// u := s
+		// if n < s {
+		// 	u = n
+		// }
+		// if u > 0 && u%2 == 1 {
+		// 	fmt.Printf(" >> point %v is inside!\n", coord)
+		// 	numberInside++
+		// } else {
+		// 	fmt.Printf(" >> point %v is outside\n", coord)
+		// }
+
 	}
 
 	return numberInside
