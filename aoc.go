@@ -4,6 +4,7 @@ import (
 	"adventofcode2023/day_1"
 	"adventofcode2023/day_10"
 	"adventofcode2023/day_11"
+	"adventofcode2023/day_12"
 	"adventofcode2023/day_2"
 	"adventofcode2023/day_3"
 	"adventofcode2023/day_4"
@@ -33,6 +34,7 @@ func main() {
 		"day_9":  day_9.Call,
 		"day_10": day_10.Call,
 		"day_11": day_11.Call,
+		"day_12": day_12.Call,
 	}
 
 	var day string
