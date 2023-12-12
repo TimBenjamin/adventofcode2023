@@ -121,20 +121,16 @@ func partTwo() int {
 				continue
 			}
 			md := calculateManhattanDistance(galaxyA, galaxyB)
-			// fmt.Printf("Working on galaxy %v (%v) to galaxy %v (%v), basic distance is %v:\n", i+1, galaxyA, j+1, galaxyB, md)
 			for _, y := range expandedRows {
 				if (galaxyA[0] < y && galaxyB[0] > y) || (galaxyB[0] < y && galaxyA[0] > y) {
-					// fmt.Printf("  cross row %v\n", y)
 					md += 1000000 - 2
 				}
 			}
 			for _, x := range expandedCols {
 				if (galaxyA[1] < x && galaxyB[1] > x) || (galaxyB[1] < x && galaxyA[1] > x) {
-					// fmt.Printf("  cross column %v\n", x)
 					md += 1000000 - 2
 				}
 			}
-			// fmt.Printf(" > total distance is %v\n", md)
 			distanceTotal += md
 		}
 	}
