@@ -9,72 +9,118 @@ import (
 )
 
 type Record struct {
-	springs    string
-	springSets []string
-	report     []int
+	springs string
+	spec    []int
 }
 
 var records []Record
 
-func permutations(n, r int) int {
-	if n < r {
-		return 0
-	}
-	result := 1
-	for i := 0; i < r; i++ {
-		result *= (n - i)
+func check(pattern string, spec []int) bool {
+	result := true
+	pattern = regexp.MustCompile(`(^\.+|\.+$)`).ReplaceAllString(pattern, "")
+	groups := regexp.MustCompile(`\.+`).Split(pattern, -1)
+	if len(groups) != len(spec) {
+		result = false
+	} else {
+		for i, g := range groups {
+			if i > len(spec)-1 {
+				result = false
+			}
+			if len(g) != spec[i] {
+				result = false
+			}
+		}
 	}
 	return result
 }
 
-func countWays(stringLength, containerLength int) int {
-	if stringLength > containerLength {
-		return 0
-	}
-	if stringLength == containerLength {
-		return 1
-	}
-	// Calculate permutations: containerLength(n) P stringLength(r)
-	ways := permutations(containerLength, stringLength)
+func generateVariations(input string, specLength int) []string {
+	// Find the index of the first "?" in the string
+	index := strings.Index(input, "?")
 
-	return ways
+	// If no "?" is found, return the original string
+	if index == -1 {
+		// If the string doesn't meet the basic spec in terms of groups, return empty
+		s := regexp.MustCompile(`(^\.+|\.+$)`).ReplaceAllString(input, "")
+		sp := regexp.MustCompile(`\.+`).Split(s, -1)
+		if len(sp) != specLength {
+			// fmt.Printf("%v (%v) does not meet spec %v\n", input, sp, specLength)
+			return []string{}
+		}
+		return []string{input}
+	}
+
+	// Generate variations by replacing "?" with "." and "#"
+	var variations []string
+	variations = append(variations, generateVariations(input[:index]+"."+input[index+1:], specLength)...)
+	variations = append(variations, generateVariations(input[:index]+"#"+input[index+1:], specLength)...)
+
+	return variations
 }
 
 func partOne() int {
+	total := 0
 	for _, record := range records {
-		// go through the springs to find groups of #
-		// count the number of permutations that the corresponding number in the report has in the set of #
+		memo := map[string]bool{}
 
-		fmt.Println(record.springSets)
+		fmt.Printf("Springs: %v / Spec: %v\n", record.springs, record.spec)
+
+		variations := generateVariations(record.springs, len(record.spec))
+		fmt.Printf("size of variations: %v\n", len(variations))
+
 		ways := 0
-		if len(record.springSets) == len(record.report) {
-			for i, set := range record.springSets {
-				if regexp.MustCompile(`^#+$`).MatchString(set) {
-					// these ones can be ignored as there are no alternatives - counts as 0
-					// e.g. ### (3)
-					// fmt.Printf("set %v is entirely made from #, of length %v and the corresponding report number is %v\n", set, len(set), record.report[i])
-				} else if len(set) == record.report[i] {
-					// this is a combination of ?# same length as number of springs
-					// e.g. ???? (4) or #?# (3)
-					// it counts as 1 not 0
-					fmt.Printf("set %v of length %v can only take report number %v in one way\n", set, len(set), record.report[i])
-					ways++
-				} else {
-					fmt.Printf("set %v is of length %v and the corresponding report number is %v\n", set, len(set), record.report[i])
-					ways += countWays(record.report[i], len(set))
-				}
+		for _, v := range variations {
+			if ok := memo[v]; ok {
+				// fmt.Printf("%v is possible\n", v)
+				ways++
+			} else if check(v, record.spec) {
+				// fmt.Printf("%v is possible\n", v)
+				ways++
+				memo[v] = true
+			} else {
+				// fmt.Printf("%v is NOT possible\n", v)
+				memo[v] = false
 			}
-		} else {
-			// there is going to be multiple springSets in one set of ?#
-			fmt.Printf("we have springSets: %v and report: %v\n", record.springSets, record.report)
-			// ???
 		}
-		fmt.Printf(" > Counted %v ways\n\n", ways)
+		total += ways
+		fmt.Printf(" > %v ways\n", ways)
+		fmt.Println()
 	}
-	return 0
+	return total
+}
+
+func getUnfoldedRecord(record Record) Record {
+	// generate the "unfolded" version
+	s := []string{}
+	spec := []int{}
+	for i := 0; i < 5; i++ {
+		s = append(s, record.springs)
+		spec = append(spec, record.spec...)
+	}
+	springs := strings.Join(s, "?")
+	return Record{springs: springs, spec: spec}
 }
 
 func partTwo() int {
+	total := 0
+	for _, record := range records {
+		unfoldedRecord := getUnfoldedRecord(record)
+		fmt.Printf("springs: %v / spec: %v\n", unfoldedRecord.springs, unfoldedRecord.spec)
+		variations := generateVariations(unfoldedRecord.springs, len(unfoldedRecord.spec))
+		fmt.Printf("size of variations: %v\n", len(variations))
+		ways := 0
+		for _, v := range variations {
+			if check(v, unfoldedRecord.spec) {
+				// fmt.Printf("%v is possible\n", v)
+				ways++
+			} else {
+				// fmt.Printf("%v is NOT possible\n", v)
+			}
+		}
+		total += ways
+		fmt.Printf(" > %v ways\n", ways)
+		fmt.Println()
+	}
 	return 0
 }
 
@@ -83,20 +129,15 @@ func Call(part string, inputFile string) string {
 	for _, line := range lines {
 		s := strings.Split(line, " ")
 		r := strings.Split(s[1], ",")
-		report := []int{}
+		springs := regexp.MustCompile(`(^\.+|\.+$)`).ReplaceAllString(s[0], "")
+		spec := []int{} // the list of numbers
 		for _, n := range r {
 			num, _ := strconv.Atoi(n)
-			report = append(report, num)
+			spec = append(spec, num)
 		}
-		re := regexp.MustCompile(`\.+`)
-		sprSplit := re.Split(s[0], -1)
-		springSets := []string{}
-		for _, x := range sprSplit {
-			if len(x) > 0 {
-				springSets = append(springSets, x)
-			}
-		}
-		records = append(records, Record{springs: s[0], springSets: springSets, report: report})
+		records = append(records, Record{
+			springs: springs, spec: spec,
+		})
 	}
 	var r int
 	if part == "1" {
