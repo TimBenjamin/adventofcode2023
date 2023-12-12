@@ -31,6 +31,9 @@ func countWays(stringLength, containerLength int) int {
 	if stringLength > containerLength {
 		return 0
 	}
+	if stringLength == containerLength {
+		return 1
+	}
 	// Calculate permutations: containerLength(n) P stringLength(r)
 	ways := permutations(containerLength, stringLength)
 
@@ -46,12 +49,18 @@ func partOne() int {
 		ways := 0
 		if len(record.springSets) == len(record.report) {
 			for i, set := range record.springSets {
-				if regexp.MustCompile(`^#+$`).MatchString(set) || len(set) == record.report[i] {
-					// these ones can be ignored as there are no alternatives
-					// e.g. ### (3) or ?## (3)
+				if regexp.MustCompile(`^#+$`).MatchString(set) {
+					// these ones can be ignored as there are no alternatives - counts as 0
+					// e.g. ### (3)
 					// fmt.Printf("set %v is entirely made from #, of length %v and the corresponding report number is %v\n", set, len(set), record.report[i])
+				} else if len(set) == record.report[i] {
+					// this is a combination of ?# same length as number of springs
+					// e.g. ???? (4) or #?# (3)
+					// it counts as 1 not 0
+					fmt.Printf("set %v of length %v can only take report number %v in one way\n", set, len(set), record.report[i])
+					ways++
 				} else {
-					// fmt.Printf("set %v is of length %v and the corresponding report number is %v\n", set, len(set), record.report[i])
+					fmt.Printf("set %v is of length %v and the corresponding report number is %v\n", set, len(set), record.report[i])
 					ways += countWays(record.report[i], len(set))
 				}
 			}
