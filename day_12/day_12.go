@@ -16,25 +16,20 @@ type Record struct {
 var records []Record
 
 func check(pattern string, spec []int) bool {
-	result := true
 	pattern = regexp.MustCompile(`(^\.+|\.+$)`).ReplaceAllString(pattern, "")
-	groups := regexp.MustCompile(`\.+`).Split(pattern, -1)
-	if len(groups) != len(spec) {
-		result = false
-	} else {
-		for i, g := range groups {
-			if i > len(spec)-1 {
-				result = false
-			}
-			if len(g) != spec[i] {
-				result = false
-			}
+	pattern = regexp.MustCompile(`\.+`).ReplaceAllString(pattern, ".")
+	t := []string{}
+	for _, s := range spec {
+		x := ""
+		for i := 0; i < s; i++ {
+			x += "#"
 		}
+		t = append(t, x)
 	}
-	return result
+	return pattern == strings.Join(t, ".")
 }
 
-func generateVariations(input string, specLength int) []string {
+func generateVariations(input string, spec []int) []string {
 	// Find the index of the first "?" in the string
 	index := strings.Index(input, "?")
 
@@ -43,7 +38,7 @@ func generateVariations(input string, specLength int) []string {
 		// If the string doesn't meet the basic spec in terms of groups, return empty
 		s := regexp.MustCompile(`(^\.+|\.+$)`).ReplaceAllString(input, "")
 		sp := regexp.MustCompile(`\.+`).Split(s, -1)
-		if len(sp) != specLength {
+		if len(sp) != len(spec) {
 			// fmt.Printf("%v (%v) does not meet spec %v\n", input, sp, specLength)
 			return []string{}
 		}
@@ -52,8 +47,8 @@ func generateVariations(input string, specLength int) []string {
 
 	// Generate variations by replacing "?" with "." and "#"
 	var variations []string
-	variations = append(variations, generateVariations(input[:index]+"."+input[index+1:], specLength)...)
-	variations = append(variations, generateVariations(input[:index]+"#"+input[index+1:], specLength)...)
+	variations = append(variations, generateVariations(input[:index]+"."+input[index+1:], spec)...)
+	variations = append(variations, generateVariations(input[:index]+"#"+input[index+1:], spec)...)
 
 	return variations
 }
@@ -65,20 +60,17 @@ func partOne() int {
 
 		fmt.Printf("Springs: %v / Spec: %v\n", record.springs, record.spec)
 
-		variations := generateVariations(record.springs, len(record.spec))
+		variations := generateVariations(record.springs, record.spec)
 		fmt.Printf("size of variations: %v\n", len(variations))
 
 		ways := 0
 		for _, v := range variations {
 			if ok := memo[v]; ok {
-				// fmt.Printf("%v is possible\n", v)
 				ways++
 			} else if check(v, record.spec) {
-				// fmt.Printf("%v is possible\n", v)
 				ways++
 				memo[v] = true
 			} else {
-				// fmt.Printf("%v is NOT possible\n", v)
 				memo[v] = false
 			}
 		}
@@ -104,17 +96,23 @@ func getUnfoldedRecord(record Record) Record {
 func partTwo() int {
 	total := 0
 	for _, record := range records {
+		memo := map[string]bool{}
+
 		unfoldedRecord := getUnfoldedRecord(record)
 		fmt.Printf("springs: %v / spec: %v\n", unfoldedRecord.springs, unfoldedRecord.spec)
-		variations := generateVariations(unfoldedRecord.springs, len(unfoldedRecord.spec))
+
+		variations := generateVariations(unfoldedRecord.springs, unfoldedRecord.spec)
 		fmt.Printf("size of variations: %v\n", len(variations))
+
 		ways := 0
 		for _, v := range variations {
-			if check(v, unfoldedRecord.spec) {
-				// fmt.Printf("%v is possible\n", v)
+			if ok := memo[v]; ok {
 				ways++
+			} else if check(v, unfoldedRecord.spec) {
+				ways++
+				memo[v] = true
 			} else {
-				// fmt.Printf("%v is NOT possible\n", v)
+				memo[v] = false
 			}
 		}
 		total += ways
