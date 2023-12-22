@@ -94,6 +94,7 @@ func generateTestGrid(grid []string, changeY int, changeX int) []string {
 func getCountPartTwo(grid []string) int {
 	// Same algorithm as part 1, but with added fun of swapping characters one by one until the reflection is found
 	// Must ignore the original reflection...
+	// In fact we only need to do the swapping in the part that was originally reflected?
 	var count int
 	originalReflectionCount := getCountPartOne(grid)
 	originalReflectionRowsOrColumns := "rows"
